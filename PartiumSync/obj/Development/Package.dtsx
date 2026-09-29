@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/29/2026 3:00:00 PM"
@@ -24,7 +24,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="PartiumSyncBatPath">
       <DTS:VariableValue
-        DTS:DataType="8">C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat</DTS:VariableValue>
+        DTS:DataType="8">C:\Temp\PartiumSyncPublish\RunPartiumSync-Test.bat</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -33,7 +33,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="PartiumSyncWorkingDirectory">
       <DTS:VariableValue
-        DTS:DataType="8">C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync</DTS:VariableValue>
+        DTS:DataType="8">C:\Temp\PartiumSyncPublish</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -66,9 +66,9 @@
             DTS:Name="WorkingDirectory">@[User::PartiumSyncWorkingDirectory]</DTS:PropertyExpression>
           <DTS:ObjectData>
             <ExecuteProcessData
-              Executable="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat"
+              Executable="C:\Temp\PartiumSyncPublish\RunPartiumSync-Test.bat"
               Arguments="SYNCPARTIUM"
-              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync" />
+              WorkingDirectory="C:\Temp\PartiumSyncPublish" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -90,9 +90,9 @@
             DTS:Name="WorkingDirectory">@[User::PartiumSyncWorkingDirectory]</DTS:PropertyExpression>
           <DTS:ObjectData>
             <ExecuteProcessData
-              Executable="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat"
+              Executable="C:\Temp\PartiumSyncPublish\RunPartiumSync-Test.bat"
               Arguments="TRIGGERIMPORT"
-              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync" />
+              WorkingDirectory="C:\Temp\PartiumSyncPublish" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>

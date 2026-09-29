@@ -7,13 +7,40 @@ A tool for calling the PartiumSync project commands on a scheduled time.
 `PartiumSync/` is the actual SSIS project (open `PartiumSync.sln` in Visual Studio 2022 with the
 "SQL Server Integration Services Projects" extension installed). It's modeled directly on `CNHReman.SSIS.VLM`'s package: one Sequence
 Container, one Execute Process Task per step, chained with success-only precedence
-constraints, and a single `User::PartiumSyncBatPath` variable driving both tasks' `Executable`
-property via a `PropertyExpression` (same pattern VLM uses for its own exe path).
+constraints, and two `User` variables (`PartiumSyncBatPath`, `PartiumSyncWorkingDirectory`)
+driving both tasks' `Executable`/`WorkingDirectory` properties via `PropertyExpression`s (same
+pattern VLM uses for its own exe path).
 
 The full design rationale for *why* it's built this way lives in
 `CNHReman.SyteLine.PartiumSync`'s own repo, not duplicated here — see
 `docs/SSIS_Package_Instructions.md` and `CLAUDE.md`'s "Configuration" section. This README
 only covers what's specific to this SSIS project.
+
+## Confirmed working, 2026-09-29
+
+Locally executed end-to-end in Visual Studio 2022 (SSIS designer's "Start" / Execute Package),
+against a local publish of `CNHReman.SyteLine.PartiumSync` (`C:\Temp\PartiumSyncPublish`) with
+both variables temporarily pointed there — `SYNCPARTIUM` ran, succeeded, and correctly gated
+`TRIGGERIMPORT` via the precedence constraint. Confirms the package's actual mechanics (Sequence
+Container, both Execute Process Tasks, exit-code propagation through the wrapper `.bat`) work,
+not just the underlying `.exe` in isolation.
+
+Two real bugs surfaced and fixed getting there, both worth knowing if this package is ever
+hand-edited again outside Visual Studio:
+- **`Package.dtsx` was missing a `DTS:ProtectionLevel` attribute**, which VS2022's build flags as
+  "Package.dtsx has a different ProtectionLevel than the project" (the project manifest declares
+  `DontSaveSensitive`; the package must say so explicitly too, not rely on an implicit default).
+- **`WorkingDirectory` was a separate, hardcoded value on each Execute Process Task**, not tied
+  to `PartiumSyncBatPath` — so changing that one variable alone wasn't enough; the tasks still
+  failed validation with "the directory ... does not exist." Fixed by adding a second variable,
+  `PartiumSyncWorkingDirectory`, driving both tasks' `WorkingDirectory` the same way
+  `PartiumSyncBatPath` already drives `Executable` — one place to edit for either, not a
+  per-task Properties-grid hunt.
+
+**Not yet done:** the same test against the actual deployed path on the data warehouse server
+(`C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync`, confirmed accurate but not yet re-tested
+against it directly) — `RunPartiumSync-Test.bat` still needs to be copied there alongside the
+`.exe` before a real run will find it.
 
 ## Control flow
 
@@ -24,8 +51,9 @@ Sequence Container
 
 Two Execute Process Tasks, chained success-only (the default precedence constraint behavior —
 `TRIGGERIMPORT` only runs if `SYNCPARTIUM` actually succeeded). Both tasks call the *same*
-wrapper `.bat` (via `@[User::PartiumSyncBatPath]`), passing their own mode as a fixed
-`Arguments` value — exactly how VLM's package drives 4 tasks off one `VLMexePath` variable.
+wrapper `.bat` (via `@[User::PartiumSyncBatPath]`) in the *same* working directory (via
+`@[User::PartiumSyncWorkingDirectory]`), passing their own mode as a fixed `Arguments` value —
+exactly how VLM's package drives 4 tasks off one `VLMexePath` variable.
 
 ## Why a wrapper `.bat` instead of calling the `.exe` directly
 
@@ -52,11 +80,11 @@ it was given (`%*`) — so one `.bat` per environment covers both `SYNCPARTIUM` 
 2. Copy the `.bat` file for the environment you're targeting into that **same** folder — the
    scripts resolve the `.exe` relative to their own location (`%~dp0`), so they must sit next
    to it, not somewhere else.
-3. In `PartiumSync.dtproj` → `Package.dtsx`, confirm `User::PartiumSyncBatPath` points at that
-   exact deployed path. It currently assumes `C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\`
-   — **double-check this against wherever it's actually deployed on the target server**, this
-   was carried over from an earlier manual deployment and hasn't been re-confirmed for this
-   package specifically.
+3. In `PartiumSync.dtproj` → `Package.dtsx`, confirm both `User::PartiumSyncBatPath` and
+   `User::PartiumSyncWorkingDirectory` point at that exact deployed folder. They currently
+   assume `C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\` — confirmed accurate (2026-09-29),
+   but re-verify if the deployment location ever changes; both variables need to agree with each
+   other and with reality, or the tasks fail package validation (see "Confirmed working" above).
 4. Deploy the `.ispac` (Project Deployment Model) to the target SSISDB, or run the `.dtsx`
    directly via a SQL Agent job step / Execute Process — whichever matches how VLM's own
    package is scheduled today.
