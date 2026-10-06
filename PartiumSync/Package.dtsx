@@ -12,8 +12,8 @@
   DTS:ObjectName="Package"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{C0AAAF09-233C-4400-859B-21EF5150B23D}">
+  DTS:VersionBuild="4"
+  DTS:VersionGUID="{F62D0252-4BB4-4A47-941D-6D64415A81CF}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:Variables>
@@ -24,7 +24,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="PartiumSyncBatPath">
       <DTS:VariableValue
-        DTS:DataType="8">C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat</DTS:VariableValue>
+        DTS:DataType="8">C:\exe\CNHReman.SyteLine.PartiumSync\RunPartiumSync-ProductionToSandbox.bat</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -33,7 +33,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="PartiumSyncWorkingDirectory">
       <DTS:VariableValue
-        DTS:DataType="8">C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync</DTS:VariableValue>
+        DTS:DataType="8">C:\exe\CNHReman.Syteline.PartiumSync\</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -66,9 +66,9 @@
             DTS:Name="WorkingDirectory">@[User::PartiumSyncWorkingDirectory]</DTS:PropertyExpression>
           <DTS:ObjectData>
             <ExecuteProcessData
-              Executable="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat"
+              Executable="C:\exe\CNHReman.SyteLine.PartiumSync\RunPartiumSync-ProductionToSandbox.bat"
               Arguments="SYNCPARTIUM"
-              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync" />
+              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -90,9 +90,9 @@
             DTS:Name="WorkingDirectory">@[User::PartiumSyncWorkingDirectory]</DTS:PropertyExpression>
           <DTS:ObjectData>
             <ExecuteProcessData
-              Executable="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync\RunPartiumSync-Test.bat"
+              Executable="C:\exe\CNHReman.SyteLine.PartiumSync\RunPartiumSync-ProductionToSandbox.bat"
               Arguments="TRIGGERIMPORT"
-              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\PartiumSync" />
+              WorkingDirectory="C:\exe\CNHReman.Syteline.PartiumSync\" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
